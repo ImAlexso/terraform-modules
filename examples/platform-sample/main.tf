@@ -1,102 +1,115 @@
-terraform {
-  required_version = ">= 1.5.0"
+data "azurerm_client_config" "current" {}
 
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 4.0"
-    }
-  }
-}
+locals {
+  name_base = "sample-dev-we"
 
-provider "azurerm" {
-  features {}
-}
-
-module "rg" {
-  source   = "../../resource-group"
-  name     = "rg-example-dev-we"
-  location = "westeurope"
   tags = {
     environment = "dev"
-    project     = "example"
+    project     = "platform-sample"
+    managed_by  = "terraform"
   }
 }
 
-module "vnet" {
-  source              = "../../virtual-network"
-  name                = "vnet-example-dev-we"
-  location            = module.rg.location
-  resource_group_name = module.rg.name
-  address_space       = ["10.10.0.0/16"]
+module "resource_group" {
+  source = "../../modules/resource-group"
+
+  name     = "rg-${local.name_base}"
+  location = "westeurope"
+  tags     = local.tags
 }
 
-module "app_subnet" {
-  source               = "../../subnet"
-  name                 = "snet-app"
-  resource_group_name  = module.rg.name
-  virtual_network_name = module.vnet.name
-  address_prefixes     = ["10.10.1.0/24"]
+module "virtual_network" {
+  source = "../../modules/virtual-network"
+
+  name                = "vnet-${local.name_base}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  address_space       = ["10.50.0.0/16"]
+  tags                = local.tags
+}
+
+module "subnet_app" {
+  source = "../../modules/subnet"
+
+  name                 = "snet-app-int"
+  resource_group_name  = module.resource_group.name
+  virtual_network_name = module.virtual_network.name
+  address_prefixes     = ["10.50.1.0/24"]
+
   delegations = [
     {
       name = "appservice-delegation"
       service_delegation = {
-        name    = "Microsoft.Web/serverFarms"
-        actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+        name = "Microsoft.Web/serverFarms"
+        actions = [
+          "Microsoft.Network/virtualNetworks/subnets/action"
+        ]
       }
     }
   ]
 }
 
-module "pe_subnet" {
-  source               = "../../subnet"
-  name                 = "snet-private-endpoints"
-  resource_group_name  = module.rg.name
-  virtual_network_name = module.vnet.name
-  address_prefixes     = ["10.10.2.0/24"]
+module "subnet_private_endpoints" {
+  source = "../../modules/subnet"
+
+  name                              = "snet-private-endpoints"
+  resource_group_name               = module.resource_group.name
+  virtual_network_name              = module.virtual_network.name
+  address_prefixes                  = ["10.50.2.0/24"]
   private_endpoint_network_policies = "Disabled"
 }
 
-module "sql_dns" {
-  source              = "../../private-dns-zone"
+module "private_dns_zone_sql" {
+  source = "../../modules/private-dns-zone"
+
   name                = "privatelink.database.windows.net"
-  resource_group_name = module.rg.name
+  resource_group_name = module.resource_group.name
+  tags                = local.tags
 }
 
-module "sql_dns_link" {
-  source                = "../../private-dns-zone-link"
-  name                  = "link-sql-example"
-  resource_group_name   = module.rg.name
-  private_dns_zone_name = module.sql_dns.name
-  virtual_network_id    = module.vnet.id
+module "private_dns_zone_link_sql" {
+  source = "../../modules/private-dns-zone-link"
+
+  name                  = "link-sql-${local.name_base}"
+  resource_group_name   = module.resource_group.name
+  private_dns_zone_name = module.private_dns_zone_sql.name
+  virtual_network_id    = module.virtual_network.id
+  registration_enabled  = false
+  tags                  = local.tags
 }
 
 module "sql_server" {
-  source                         = "../../sql-server"
-  name                           = "sql-example-dev-we"
-  resource_group_name            = module.rg.name
-  location                       = module.rg.location
-  administrator_login            = "sqladminuser"
-  administrator_login_password   = "ChangeMe123!"
-  public_network_access_enabled  = false
+  source = "../../modules/sql-server"
+
+  name                          = "sqlsampledevwealex"
+  resource_group_name           = module.resource_group.name
+  location                      = module.resource_group.location
+  administrator_login           = "sqladmin"
+  administrator_login_password  = "ChangeMe123!ChangeMe123!"
+  public_network_access_enabled = true
+  tags                          = local.tags
 }
 
 module "sql_database" {
-  source    = "../../sql-database"
-  name      = "sqldb-example-dev-we"
+  source = "../../modules/sql-database"
+
+  name      = "sqldb-sample-dev"
   server_id = module.sql_server.id
   sku_name  = "Basic"
+  tags      = local.tags
 }
 
 module "sql_private_endpoint" {
-  source                         = "../../private-endpoint"
-  name                           = "pe-sql-example-dev-we"
-  location                       = module.rg.location
-  resource_group_name            = module.rg.name
-  subnet_id                      = module.pe_subnet.id
-  private_service_connection_name = "psc-sql"
-  private_connection_resource_id = module.sql_server.id
-  subresource_names              = ["sqlServer"]
-  private_dns_zone_group_name    = "pdzg-sql"
-  private_dns_zone_ids           = [module.sql_dns.id]
+  source = "../../modules/private-endpoint"
+
+  name                            = "pe-sql-${local.name_base}"
+  location                        = module.resource_group.location
+  resource_group_name             = module.resource_group.name
+  subnet_id                       = module.subnet_private_endpoints.id
+  private_service_connection_name = "psc-sql-${local.name_base}"
+  private_connection_resource_id  = module.sql_server.id
+  subresource_names               = ["sqlServer"]
+  private_dns_zone_group_name     = "pdzg-sql"
+  private_dns_zone_ids            = [module.private_dns_zone_sql.id]
+  tags                            = local.tags
 }
