@@ -17,3 +17,9 @@ output "primary_web_host" {
   description = "Primary web host of the storage account."
   value       = azurerm_storage_account.this.primary_web_host
 }
+
+output "primary_access_key" {
+  description = "Primary access key of the storage account."
+  value       = azurerm_storage_account.this.primary_access_key
+  sensitive   = true
+}

@@ -1,13 +1,13 @@
 resource "azurerm_linux_web_app" "this" {
-  name                = var.name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  service_plan_id     = var.service_plan_id
-  https_only          = var.https_only
+  name                      = var.name
+  location                  = var.location
+  resource_group_name       = var.resource_group_name
+  service_plan_id           = var.service_plan_id
+  https_only                = var.https_only
   virtual_network_subnet_id = var.virtual_network_subnet_id
   client_affinity_enabled   = var.client_affinity_enabled
-  enabled                  = var.enabled
-  tags                     = var.tags
+  enabled                   = var.enabled
+  tags                      = var.tags
 
   dynamic "identity" {
     for_each = var.identity == null ? [] : [var.identity]
@@ -18,10 +18,14 @@ resource "azurerm_linux_web_app" "this" {
   }
 
   site_config {
-    always_on              = var.site_config.always_on
-    ftps_state             = var.site_config.ftps_state
-    health_check_path      = var.site_config.health_check_path
-    vnet_route_all_enabled = var.site_config.vnet_route_all_enabled
+    always_on                               = var.site_config.always_on
+    ftps_state                              = var.site_config.ftps_state
+    health_check_path                       = var.site_config.health_check_path
+    health_check_eviction_time_in_min       = var.site_config.health_check_eviction_time_in_min
+    http2_enabled                           = var.site_config.http2_enabled
+    minimum_tls_version                     = var.site_config.minimum_tls_version
+    vnet_route_all_enabled                  = var.site_config.vnet_route_all_enabled
+    container_registry_use_managed_identity = var.site_config.container_registry_use_managed_identity
 
     dynamic "application_stack" {
       for_each = var.site_config.application_stack == null ? [] : [var.site_config.application_stack]
