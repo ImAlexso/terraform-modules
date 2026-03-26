@@ -27,13 +27,14 @@ module "sql_database" {
 module "sql_private_endpoint" {
   source = "../../modules/private-endpoint"
 
-  name                           = var.private_endpoint_name
-  location                       = var.location
-  resource_group_name            = var.resource_group_name
-  subnet_id                      = var.private_endpoints_subnet_id
-  private_connection_resource_id = module.sql_server.id
-  subresource_names              = ["sqlServer"]
-  private_dns_zone_group_name    = var.private_dns_zone_group_name
-  private_dns_zone_ids           = [var.sql_private_dns_zone_id]
-  tags                           = var.tags
+  name                            = var.private_endpoint_name
+  location                        = var.location
+  resource_group_name             = var.resource_group_name
+  subnet_id                       = var.private_endpoints_subnet_id
+  private_service_connection_name = var.private_service_connection_name
+  private_connection_resource_id  = module.sql_server.id
+  subresource_names               = ["sqlServer"]
+  private_dns_zone_group_name     = var.private_dns_zone_group_name
+  private_dns_zone_ids            = [var.sql_private_dns_zone_id]
+  tags                            = var.tags
 }

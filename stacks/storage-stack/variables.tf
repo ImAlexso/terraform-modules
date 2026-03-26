@@ -126,3 +126,7 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+variable "private_service_connection_name" {
+  description = "Name of the private service connection used by the Blob private endpoint."
+  type        = string
+}
