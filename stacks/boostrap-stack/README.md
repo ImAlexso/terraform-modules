@@ -31,5 +31,6 @@ tags = {
 environment = "dev"
 project = "cantera"
 managed_by = "terraform"
+purpose = "terraform-state"
 }
 }
