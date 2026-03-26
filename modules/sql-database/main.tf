@@ -6,4 +6,8 @@ resource "azurerm_mssql_database" "this" {
   max_size_gb    = var.max_size_gb
   zone_redundant = var.zone_redundant
   tags           = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

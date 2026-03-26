@@ -16,11 +16,19 @@ variable "location" {
 variable "account_tier" {
   description = "Tier of the storage account."
   type        = string
+  validation {
+    condition     = contains(["Standard", "Premium"], var.account_tier)
+    error_message = "account_tier must be either Standard or Premium."
+  }
 }
 
 variable "account_replication_type" {
   description = "Replication type of the storage account."
   type        = string
+  validation {
+    condition     = contains(["LRS", "GRS", "RAGRS", "ZRS", "GZRS", "RAGZRS"], var.account_replication_type)
+    error_message = "account_replication_type must be a valid Azure Storage replication type."
+  }
 }
 
 variable "account_kind" {
@@ -39,6 +47,10 @@ variable "min_tls_version" {
   description = "Minimum TLS version for the storage account."
   type        = string
   default     = "TLS1_2"
+  validation {
+    condition     = contains(["TLS1_0", "TLS1_1", "TLS1_2"], var.min_tls_version)
+    error_message = "min_tls_version must be one of: TLS1_0, TLS1_1, TLS1_2."
+  }
 }
 
 variable "https_traffic_only_enabled" {
