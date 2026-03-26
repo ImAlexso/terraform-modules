@@ -40,6 +40,10 @@ variable "soft_delete_retention_days" {
   description = "Soft delete retention period in days."
   type        = number
   default     = 7
+  validation {
+    condition     = var.soft_delete_retention_days >= 7 && var.soft_delete_retention_days <= 90
+    error_message = "soft_delete_retention_days must be between 7 and 90."
+  }
 }
 
 variable "purge_protection_enabled" {

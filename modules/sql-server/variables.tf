@@ -17,6 +17,10 @@ variable "version" {
   description = "Version of Azure SQL Server."
   type        = string
   default     = "12.0"
+  validation {
+    condition     = contains(["12.0"], var.version)
+    error_message = "version must be 12.0 for Azure SQL Server."
+  }
 }
 
 variable "administrator_login" {
@@ -40,6 +44,10 @@ variable "minimum_tls_version" {
   description = "Minimum TLS version for the SQL server."
   type        = string
   default     = "1.2"
+  validation {
+    condition     = contains(["1.0", "1.1", "1.2"], var.minimum_tls_version)
+    error_message = "minimum_tls_version must be one of: 1.0, 1.1, 1.2."
+  }
 }
 
 variable "azuread_administrator" {
