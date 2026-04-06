@@ -29,7 +29,7 @@ module "linux_web_app" {
 }
 
 module "webapp_key_vault_secrets_user" {
-  count  = var.create_role_assignments && var.key_vault_id != null ? 1 : 0
+  count  = var.create_role_assignments ? 1 : 0
   source = "../../modules/role-assignment"
 
   scope                = var.key_vault_id
@@ -38,7 +38,7 @@ module "webapp_key_vault_secrets_user" {
 }
 
 module "webapp_storage_blob_data_contributor" {
-  count  = var.create_role_assignments && var.storage_account_id != null ? 1 : 0
+  count  = var.create_role_assignments ? 1 : 0
   source = "../../modules/role-assignment"
 
   scope                = var.storage_account_id
@@ -47,7 +47,7 @@ module "webapp_storage_blob_data_contributor" {
 }
 
 module "webapp_acr_pull" {
-  count  = var.create_role_assignments && var.container_registry_id != null ? 1 : 0
+  count  = var.create_role_assignments ? 1 : 0
   source = "../../modules/role-assignment"
 
   scope                = var.container_registry_id
