@@ -68,3 +68,9 @@ variable "private_service_connection_name" {
   description = "Name of the private service connection used by the ACR private endpoint."
   type        = string
 }
+
+variable "enable_private_endpoint" {
+  description = "Whether to create a private endpoint for the container registry."
+  type        = bool
+  default     = false
+}
