@@ -13,13 +13,13 @@ variable "location" {
   type        = string
 }
 
-variable "version" {
+variable "sql_server_version" {
   description = "Version of Azure SQL Server."
   type        = string
   default     = "12.0"
   validation {
-    condition     = contains(["12.0"], var.version)
-    error_message = "version must be 12.0 for Azure SQL Server."
+    condition     = contains(["12.0"], var.sql_server_version)
+    error_message = "sql_server_version must be 12.0 for Azure SQL Server."
   }
 }
 
