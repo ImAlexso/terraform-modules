@@ -32,3 +32,9 @@ output "private_endpoint_name" {
   description = "Name of the Blob private endpoint."
   value       = module.blob_private_endpoint.name
 }
+
+output "storage_account_primary_connection_string" {
+  description = "Primary connection string of the storage account."
+  value       = module.storage_account.primary_connection_string
+  sensitive   = true
+}
