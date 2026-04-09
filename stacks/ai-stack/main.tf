@@ -23,6 +23,11 @@ module "openai_deployment" {
   rai_policy_name      = var.rai_policy_name
 }
 
+resource "time_sleep" "wait_for_openai" {
+  depends_on      = [module.openai_account]
+  create_duration = "120s"
+}
+
 module "openai_private_endpoint" {
   source = "../../modules/private-endpoint"
 
@@ -36,4 +41,6 @@ module "openai_private_endpoint" {
   private_dns_zone_group_name     = var.private_dns_zone_group_name
   private_dns_zone_ids            = [var.openai_private_dns_zone_id]
   tags                            = var.tags
+
+  depends_on = [time_sleep.wait_for_openai]
 }
