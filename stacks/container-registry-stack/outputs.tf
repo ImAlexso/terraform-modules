@@ -15,10 +15,10 @@ output "login_server" {
 
 output "private_endpoint_id" {
   description = "ID of the ACR private endpoint."
-  value       = module.container_registry_private_endpoint.id
+  value       = var.enable_private_endpoint ? module.container_registry_private_endpoint[0].id : null
 }
 
 output "private_endpoint_name" {
   description = "Name of the ACR private endpoint."
-  value       = module.container_registry_private_endpoint.name
+  value       = var.enable_private_endpoint ? module.container_registry_private_endpoint[0].name : null
 }

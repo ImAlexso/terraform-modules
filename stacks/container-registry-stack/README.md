@@ -7,8 +7,8 @@ Creates the reusable container registry layer.
 This stack creates:
 
 - Azure Container Registry
-- private endpoint for ACR
-- DNS zone group binding for the ACR private endpoint
+- optional private endpoint for ACR
+- optional DNS zone group binding for the ACR private endpoint
 
 ## It does not create
 
@@ -21,8 +21,9 @@ Those should be handled outside this stack.
 
 ## Notes
 
-- This stack requires the private DNS zone for ACR to already exist.
-- The private endpoint requires a dedicated private service connection name.
+- Private endpoint creation is optional and should only be enabled when using a Premium SKU.
+- If `enable_private_endpoint = false`, the stack only creates the registry.
+- The private DNS zone for ACR must already exist when private endpoint is enabled.
 - Keep application-specific integration logic in the consumer root module.
 
 ## Example
@@ -33,6 +34,10 @@ source = "../../stacks/container-registry-stack"
 resource_group_name = "rg-incidencias-dev-we"
 location = "westeurope"
 container_registry_name = "acrdevalexwe01"
+sku = "Basic"
+public_network_access_enabled = true
+enable_private_endpoint = false
+
 private_endpoint_name = "pe-acr-incidencias-dev-we"
 private_service_connection_name = "psc-acr-incidencias-dev-we"
 private_endpoints_subnet_id = module.network.private_endpoints_subnet_id

@@ -12,6 +12,7 @@ module "container_registry" {
 }
 
 module "container_registry_private_endpoint" {
+  count  = var.enable_private_endpoint ? 1 : 0
   source = "../../modules/private-endpoint"
 
   name                            = var.private_endpoint_name
