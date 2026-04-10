@@ -50,3 +50,21 @@ variable "workload_identity_enabled" {
   type    = bool
   default = false
 }
+
+variable "key_vault_secrets_provider_enabled" {
+  type        = bool
+  description = "Enable Azure Key Vault Secrets Provider add-on in AKS"
+  default     = false
+}
+
+variable "secret_rotation_enabled" {
+  type        = bool
+  description = "Enable secret rotation for AKS Key Vault Secrets Provider"
+  default     = true
+}
+
+variable "secret_rotation_interval" {
+  type        = string
+  description = "Secret rotation interval for AKS Key Vault Secrets Provider"
+  default     = "2m"
+}

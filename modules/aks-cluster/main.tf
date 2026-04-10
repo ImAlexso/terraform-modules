@@ -19,6 +19,14 @@ resource "azurerm_kubernetes_cluster" "this" {
     type = "SystemAssigned"
   }
 
+  dynamic "key_vault_secrets_provider" {
+    for_each = var.key_vault_secrets_provider_enabled ? [1] : []
+    content {
+      secret_rotation_enabled  = var.secret_rotation_enabled
+      secret_rotation_interval = var.secret_rotation_interval
+    }
+  }
+
   network_profile {
     network_plugin    = "azure"
     load_balancer_sku = "standard"
