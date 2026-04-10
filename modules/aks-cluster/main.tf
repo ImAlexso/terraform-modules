@@ -4,6 +4,9 @@ resource "azurerm_kubernetes_cluster" "this" {
   resource_group_name = var.resource_group_name
   dns_prefix          = var.dns_prefix
 
+  oidc_issuer_enabled       = var.oidc_issuer_enabled
+  workload_identity_enabled = var.workload_identity_enabled
+
   default_node_pool {
     name       = "system"
     node_count = var.node_count

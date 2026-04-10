@@ -40,3 +40,13 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+
+variable "oidc_issuer_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "workload_identity_enabled" {
+  type    = bool
+  default = false
+}
